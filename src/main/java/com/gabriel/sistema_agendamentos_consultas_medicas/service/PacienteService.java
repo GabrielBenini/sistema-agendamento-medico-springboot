@@ -1,6 +1,6 @@
 package com.gabriel.sistema_agendamentos_consultas_medicas.service;
 
-import com.gabriel.sistema_agendamentos_consultas_medicas.model.Pacientes;
+import com.gabriel.sistema_agendamentos_consultas_medicas.model.Paciente;
 import com.gabriel.sistema_agendamentos_consultas_medicas.model.dtos.PacientesRequestDTO;
 import com.gabriel.sistema_agendamentos_consultas_medicas.model.dtos.PacientesResponseDTO;
 import com.gabriel.sistema_agendamentos_consultas_medicas.repository.PacientesRepository;
@@ -11,13 +11,13 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
-public class PacientesService {
+public class PacienteService {
 
     private final PacientesRepository pacientesRepository;
 
     public PacientesResponseDTO cadastroPaciente(PacientesRequestDTO pacientesRequestDTO){
 
-        Pacientes paciente = new Pacientes();
+        Paciente paciente = new Paciente();
         paciente.setNome(pacientesRequestDTO.nome());
         paciente.setCpf(pacientesRequestDTO.cpf());
         paciente.setDataNascimento(pacientesRequestDTO.dataNascimento());
@@ -36,7 +36,7 @@ public class PacientesService {
 
     public PacientesResponseDTO atualizarPacientePeloID(Long id, PacientesRequestDTO pacientesRequestDTO){
 
-        Pacientes paciente = pacientesRepository.findById(id)
+        Paciente paciente = pacientesRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Paciente nao encontrado com o id: " + id));
 
         paciente.setNome(pacientesRequestDTO.nome());
@@ -59,18 +59,18 @@ public class PacientesService {
 
         return pacientesRepository.findAll()
                 .stream()
-                .map(pacientes -> new PacientesResponseDTO(
-                        pacientes.getId(),
-                        pacientes.getNome(),
-                        pacientes.getCpf(),
-                        pacientes.getDataNascimento(),
-                        pacientes.getTelefone()
+                .map(paciente -> new PacientesResponseDTO(
+                        paciente.getId(),
+                        paciente.getNome(),
+                        paciente.getCpf(),
+                        paciente.getDataNascimento(),
+                        paciente.getTelefone()
                 )).toList();
     }
 
     public PacientesResponseDTO buscarPacientePeloId(Long id){
 
-        Pacientes paciente = pacientesRepository.findById(id)
+        Paciente paciente = pacientesRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Paciente nao encontrado com o id: " + id));
 
         return new PacientesResponseDTO(
@@ -84,7 +84,7 @@ public class PacientesService {
 
     public void deletarPacientePeloId(Long id){
 
-        Pacientes paciente = pacientesRepository.findById(id)
+        Paciente paciente = pacientesRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Paciente nao encontrado com o id: " + id));
 
         pacientesRepository.deleteById(id);
