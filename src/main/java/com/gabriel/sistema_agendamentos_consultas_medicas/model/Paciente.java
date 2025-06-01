@@ -31,7 +31,7 @@ public class Paciente {
     @Column(name = "telefone", nullable = false)
     private String telefone;
 
-    @OneToMany(mappedBy = "pacientes", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "paciente", cascade = CascadeType.ALL)
     private List<Consulta> consultas;
 
 }

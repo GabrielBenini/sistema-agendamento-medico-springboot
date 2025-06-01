@@ -14,7 +14,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/pacientes")
 @RequiredArgsConstructor
-public class PacientesController {
+public class PacienteController {
 
     private final PacienteService pacienteService;
 

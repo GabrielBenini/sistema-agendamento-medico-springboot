@@ -20,7 +20,7 @@ public class DisponibilidadeMedico {
     private Long id;
 
     @Column(name = "diaDaSemana", length = 15, nullable = false)
-    @Enumerated
+    @Enumerated(EnumType.STRING)
     private DiaDaSemana diaDaSemana;
 
     @Column(name = "horaInicio", nullable = false)
