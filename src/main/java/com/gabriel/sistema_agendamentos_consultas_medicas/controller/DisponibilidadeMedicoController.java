@@ -7,23 +7,55 @@ import com.gabriel.sistema_agendamentos_consultas_medicas.service.Disponibilidad
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/disponibilidades")
 @RequiredArgsConstructor
 public class DisponibilidadeMedicoController {
 
-    private final DisponibilidadeMedicoService medicoService;
+    private final DisponibilidadeMedicoService disponibilidadeMedico;
 
     @PostMapping
     public ResponseEntity<DisponibilidadeMedicoResponseDTO> criarDisponibilidade(@RequestBody DisponibilidadeMedicoRequestDTO medicoRequestDTO){
 
-        DisponibilidadeMedicoResponseDTO medicoResponseDTO = medicoService.criarDisponibilidade(medicoRequestDTO);
+        DisponibilidadeMedicoResponseDTO medicoResponseDTO = disponibilidadeMedico.criarDisponibilidade(medicoRequestDTO);
         return ResponseEntity.status(HttpStatus.CREATED).body(medicoResponseDTO);
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deletarDisponibilidade(@PathVariable("id") Long id){
+
+        disponibilidadeMedico.deletarDisponibilidade(id);
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+    }
+
+    @GetMapping
+    public ResponseEntity<List<DisponibilidadeMedicoResponseDTO>> listarTodasDisponibilidades(){
+        List<DisponibilidadeMedicoResponseDTO> medicoResponseDTO = disponibilidadeMedico.listarTodasDisponibilidades();
+        return ResponseEntity.status(HttpStatus.OK).body(medicoResponseDTO);
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<DisponibilidadeMedicoResponseDTO> listarDisponibilidadePorId(@PathVariable("id") Long id){
+        DisponibilidadeMedicoResponseDTO disponibilidadeMedicoResponseDTO = disponibilidadeMedico.listarDisponibilidadePorId(id);
+        return ResponseEntity.status(HttpStatus.OK).body(disponibilidadeMedicoResponseDTO);
+    }
+
+    @GetMapping("/medicos/{medicoId}")
+    public ResponseEntity<List<DisponibilidadeMedicoResponseDTO>> listarDisponibilidadePorMedicoId(@PathVariable("medicoId") Long medicoId){
+
+        List<DisponibilidadeMedicoResponseDTO> disponibilidadeMedicoResponseDTO = disponibilidadeMedico.listarDisponibilidadePorMedicoId(medicoId);
+        return ResponseEntity.status(HttpStatus.OK).body(disponibilidadeMedicoResponseDTO);
+
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<DisponibilidadeMedicoResponseDTO> atualizarDisponibilidadePorId(@PathVariable("id") Long id, @RequestBody DisponibilidadeMedicoRequestDTO disponibilidadeMedicoRequestDTO){
+        DisponibilidadeMedicoResponseDTO disponibilidadeMedicoResponseDTO = disponibilidadeMedico.atualizarDisponibilidadePorId(id, disponibilidadeMedicoRequestDTO);
+        return ResponseEntity.status(HttpStatus.OK).body(disponibilidadeMedicoResponseDTO);
     }
 
 

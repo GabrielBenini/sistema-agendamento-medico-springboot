@@ -4,5 +4,5 @@ import com.gabriel.sistema_agendamentos_consultas_medicas.model.enumerates.DiaDa
 
 import java.time.LocalTime;
 
-public record DisponibilidadeMedicoResponseDTO(Long id, Long medicoId, DiaDaSemana diaDaSemana, LocalTime horaInicio, LocalTime horaTermino) {
+public record DisponibilidadeMedicoResponseDTO(Long id, Long medicoId,String medicoNome, DiaDaSemana diaDaSemana, LocalTime horaInicio, LocalTime horaTermino) {
 }
