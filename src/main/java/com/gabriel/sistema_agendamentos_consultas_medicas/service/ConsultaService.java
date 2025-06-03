@@ -64,6 +64,20 @@ public class ConsultaService {
                     + medico.getNome() + "no dia " + consultaRequestDTO.data() + " as " + consultaRequestDTO.hora());
         }
 
+        long totalConsultas = consultaRepository.countByMedicoIdAndDataAndStatus(
+                medico.getId(),
+                consultaRequestDTO.data(),
+                StatusConsulta.AGENDADA
+        );
+
+        if (totalConsultas == 5){
+
+            throw new RuntimeException("O medico ja possui o maximo de 5 consultas agendadas para esse dia!");
+
+        }
+
+
+
         Consulta novaConsulta = new Consulta();
         novaConsulta.setMedico(medico);
         novaConsulta.setPaciente(paciente);
