@@ -6,7 +6,6 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.springframework.orm.jpa.vendor.EclipseLinkJpaVendorAdapter;
 
 import java.util.List;
 
@@ -27,8 +26,8 @@ public class Medico {
     @Column(name = "crm", nullable = false, length = 50)
     private String crm;
 
+    @Enumerated(EnumType.STRING)
     @Column(name = "especialidade", nullable = false, length = 30)
-    @Enumerated
     private EspecialidadeEnum especialidade;
 
     @OneToMany(mappedBy = "medico", cascade = CascadeType.ALL)
