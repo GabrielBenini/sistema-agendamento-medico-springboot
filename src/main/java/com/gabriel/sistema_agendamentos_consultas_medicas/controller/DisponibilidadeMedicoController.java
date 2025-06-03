@@ -4,6 +4,7 @@ package com.gabriel.sistema_agendamentos_consultas_medicas.controller;
 import com.gabriel.sistema_agendamentos_consultas_medicas.model.dtos.DisponibilidadeMedicoRequestDTO;
 import com.gabriel.sistema_agendamentos_consultas_medicas.model.dtos.DisponibilidadeMedicoResponseDTO;
 import com.gabriel.sistema_agendamentos_consultas_medicas.service.DisponibilidadeMedicoService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -19,7 +20,7 @@ public class DisponibilidadeMedicoController {
     private final DisponibilidadeMedicoService disponibilidadeMedico;
 
     @PostMapping
-    public ResponseEntity<DisponibilidadeMedicoResponseDTO> criarDisponibilidade(@RequestBody DisponibilidadeMedicoRequestDTO medicoRequestDTO){
+    public ResponseEntity<DisponibilidadeMedicoResponseDTO> criarDisponibilidade(@RequestBody @Valid DisponibilidadeMedicoRequestDTO medicoRequestDTO){
 
         DisponibilidadeMedicoResponseDTO medicoResponseDTO = disponibilidadeMedico.criarDisponibilidade(medicoRequestDTO);
         return ResponseEntity.status(HttpStatus.CREATED).body(medicoResponseDTO);
@@ -53,7 +54,7 @@ public class DisponibilidadeMedicoController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<DisponibilidadeMedicoResponseDTO> atualizarDisponibilidadePorId(@PathVariable("id") Long id, @RequestBody DisponibilidadeMedicoRequestDTO disponibilidadeMedicoRequestDTO){
+    public ResponseEntity<DisponibilidadeMedicoResponseDTO> atualizarDisponibilidadePorId(@PathVariable("id") Long id, @RequestBody @Valid DisponibilidadeMedicoRequestDTO disponibilidadeMedicoRequestDTO){
         DisponibilidadeMedicoResponseDTO disponibilidadeMedicoResponseDTO = disponibilidadeMedico.atualizarDisponibilidadePorId(id, disponibilidadeMedicoRequestDTO);
         return ResponseEntity.status(HttpStatus.OK).body(disponibilidadeMedicoResponseDTO);
     }
