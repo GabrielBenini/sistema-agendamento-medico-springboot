@@ -1,5 +1,6 @@
 package com.gabriel.sistema_agendamentos_consultas_medicas.service;
 
+import com.gabriel.sistema_agendamentos_consultas_medicas.exceptions.IdNaoEncontradoException;
 import com.gabriel.sistema_agendamentos_consultas_medicas.model.Paciente;
 import com.gabriel.sistema_agendamentos_consultas_medicas.model.dtos.PacientesRequestDTO;
 import com.gabriel.sistema_agendamentos_consultas_medicas.model.dtos.PacientesResponseDTO;
@@ -37,7 +38,7 @@ public class PacienteService {
     public PacientesResponseDTO atualizarPacientePeloID(Long id, PacientesRequestDTO pacientesRequestDTO){
 
         Paciente paciente = pacientesRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Paciente nao encontrado com o id: " + id));
+                .orElseThrow(() -> new IdNaoEncontradoException("Paciente nao encontrado com o id: " + id));
 
         paciente.setNome(pacientesRequestDTO.nome());
         paciente.setCpf(pacientesRequestDTO.cpf());
@@ -71,7 +72,7 @@ public class PacienteService {
     public PacientesResponseDTO buscarPacientePeloId(Long id){
 
         Paciente paciente = pacientesRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Paciente nao encontrado com o id: " + id));
+                .orElseThrow(() -> new IdNaoEncontradoException("Paciente nao encontrado com o id: " + id));
 
         return new PacientesResponseDTO(
                 paciente.getId(),
@@ -85,7 +86,7 @@ public class PacienteService {
     public void deletarPacientePeloId(Long id){
 
         Paciente paciente = pacientesRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Paciente nao encontrado com o id: " + id));
+                .orElseThrow(() -> new IdNaoEncontradoException("Paciente nao encontrado com o id: " + id));
 
         pacientesRepository.deleteById(id);
     }

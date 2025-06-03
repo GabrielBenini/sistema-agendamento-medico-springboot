@@ -1,5 +1,9 @@
 package com.gabriel.sistema_agendamentos_consultas_medicas.service;
 
+import com.gabriel.sistema_agendamentos_consultas_medicas.exceptions.IdNaoEncontradoException;
+import com.gabriel.sistema_agendamentos_consultas_medicas.exceptions.MedicoNaoDisponivelException;
+import com.gabriel.sistema_agendamentos_consultas_medicas.exceptions.SemConsultasCadastradasException;
+import com.gabriel.sistema_agendamentos_consultas_medicas.exceptions.StatusConsultaException;
 import com.gabriel.sistema_agendamentos_consultas_medicas.model.Consulta;
 import com.gabriel.sistema_agendamentos_consultas_medicas.model.DisponibilidadeMedico;
 import com.gabriel.sistema_agendamentos_consultas_medicas.model.Medico;
@@ -34,10 +38,10 @@ public class ConsultaService {
     public ConsultaResponseDTO agendarConsulta(ConsultaRequestDTO consultaRequestDTO){
 
         Medico medico = medicoRepository.findById(consultaRequestDTO.medicoId())
-                .orElseThrow(()-> new RuntimeException("Medico nao existente com o id: " + consultaRequestDTO.medicoId()));
+                .orElseThrow(()-> new IdNaoEncontradoException("Medico nao existente com o id: " + consultaRequestDTO.medicoId()));
 
         Paciente paciente = pacientesRepository.findById(consultaRequestDTO.pacienteId())
-                .orElseThrow(() -> new RuntimeException("Paciente nao encontrado com o id: " + consultaRequestDTO.pacienteId()));
+                .orElseThrow(() -> new IdNaoEncontradoException("Paciente nao encontrado com o id: " + consultaRequestDTO.pacienteId()));
 
         LocalDate dataConsulta = consultaRequestDTO.data();
 
@@ -46,13 +50,13 @@ public class ConsultaService {
 
         DisponibilidadeMedico disponibilidade = disponibilidadeRespository
                 .findByMedicoIdAndDiaDaSemana(medico.getId(), diaEnum)
-                .orElseThrow(() -> new RuntimeException("O medico nao atende nesse dia da semana"));
+                .orElseThrow(() -> new MedicoNaoDisponivelException("O medico nao atende nesse dia da semana"));
 
         LocalTime horaConsulta = consultaRequestDTO.hora();
 
         if(horaConsulta.isBefore(disponibilidade.getHoraInicio()) ||
         horaConsulta.isAfter(disponibilidade.getHoraTermino())){
-            throw new RuntimeException("O medico nao esta disponivel nesse horario");
+            throw new MedicoNaoDisponivelException("O medico nao esta disponivel nesse horario");
         }
 
         boolean consultaExiste = consultaRepository.existsByMedicoIdAndDataAndHora(
@@ -61,7 +65,7 @@ public class ConsultaService {
                 consultaRequestDTO.hora());
 
         if (consultaExiste) {
-            throw new RuntimeException("Ja existe uma consulta agendada com o medico "
+            throw new MedicoNaoDisponivelException("Ja existe uma consulta agendada com o medico "
                     + medico.getNome() + "no dia " + consultaRequestDTO.data() + " as " + consultaRequestDTO.hora());
         }
 
@@ -73,7 +77,7 @@ public class ConsultaService {
 
         if (totalConsultas == 5){
 
-            throw new RuntimeException("O medico ja possui o maximo de 5 consultas agendadas para esse dia!");
+            throw new MedicoNaoDisponivelException("O medico ja possui o maximo de 5 consultas agendadas para esse dia!");
 
         }
 
@@ -107,10 +111,10 @@ public class ConsultaService {
     public ConsultaResponseDTO cancelarConsulta(Long id){
 
         Consulta consultas = consultaRepository.findById(id)
-                .orElseThrow(()-> new RuntimeException("Consulta nao encontrada com o id: " + id));
+                .orElseThrow(()-> new IdNaoEncontradoException("Consulta nao encontrada com o id: " + id));
 
         if (consultas.getStatus() != StatusConsulta.AGENDADA){
-            throw new RuntimeException("A consulta so pode ser cancelada se estiver com o status AGENDADA!");
+            throw new StatusConsultaException("A consulta so pode ser cancelada se estiver com o status AGENDADA!");
         }
 
         consultas.setStatus(StatusConsulta.CANCELADA);
@@ -131,10 +135,10 @@ public class ConsultaService {
     public ConsultaResponseDTO finalizarConsulta(Long id){
 
         Consulta consultas = consultaRepository.findById(id)
-                .orElseThrow(()-> new RuntimeException("Consulta nao encontrada com o id: " + id));
+                .orElseThrow(()-> new IdNaoEncontradoException("Consulta nao encontrada com o id: " + id));
 
         if (consultas.getStatus() != StatusConsulta.AGENDADA){
-            throw new RuntimeException("A consulta ja foi finalizada!");
+            throw new StatusConsultaException("A consulta ja foi finalizada!");
         }
 
         consultas.setStatus(StatusConsulta.REALIZADA);
@@ -157,7 +161,7 @@ public class ConsultaService {
     public ConsultaResponseDTO buscarConsultaPeloId(Long id){
 
         Consulta consultas = consultaRepository.findById(id)
-                .orElseThrow(()-> new RuntimeException("Consulta nao encontrada com o id: " + id));
+                .orElseThrow(()-> new IdNaoEncontradoException("Consulta nao encontrada com o id: " + id));
 
         return new ConsultaResponseDTO(
                 consultas.getId(),
@@ -189,12 +193,12 @@ public class ConsultaService {
     public List<ConsultaResponseDTO> listarConsultasPorPacienteId(Long pacienteId){
 
         Paciente pacientes = pacientesRepository.findById(pacienteId)
-                .orElseThrow(()-> new RuntimeException("Paciente nao encontrado com o id: " + pacienteId));
+                .orElseThrow(()-> new IdNaoEncontradoException("Paciente nao encontrado com o id: " + pacienteId));
 
         List<Consulta> consultas = consultaRepository.findByPacienteId(pacienteId);
 
         if(consultas.isEmpty()){
-            throw new RuntimeException("Esse paciente nao possui consultas cadastradas");
+            throw new SemConsultasCadastradasException("Esse paciente nao possui consultas cadastradas");
         }
 
         return consultas.stream()
@@ -213,12 +217,12 @@ public class ConsultaService {
     public List<ConsultaResponseDTO> listarConsultasPorMedicoId(Long medicoId){
 
         Medico medico = medicoRepository.findById(medicoId)
-                .orElseThrow(() -> new RuntimeException("Medico nao encontrado com o id: " + medicoId));
+                .orElseThrow(() -> new IdNaoEncontradoException("Medico nao encontrado com o id: " + medicoId));
 
         List<Consulta> consultas = consultaRepository.findByMedicoId(medicoId);
 
         if (consultas.isEmpty()){
-            throw new RuntimeException("Esse medico nao possui consultas cadastradas!");
+            throw new SemConsultasCadastradasException("Esse medico nao possui consultas cadastradas!");
         }
 
         return consultas.stream()
@@ -235,26 +239,10 @@ public class ConsultaService {
     }
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
     public void deletarConsultaPorId(Long id){
 
         Consulta consultas = consultaRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Consulta nao encontrada com o id: " + id));
+                .orElseThrow(() -> new IdNaoEncontradoException("Consulta nao encontrada com o id: " + id));
 
         consultaRepository.delete(consultas);
 

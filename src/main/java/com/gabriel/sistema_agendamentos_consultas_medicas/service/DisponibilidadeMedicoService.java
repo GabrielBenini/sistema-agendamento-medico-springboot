@@ -1,5 +1,7 @@
 package com.gabriel.sistema_agendamentos_consultas_medicas.service;
 
+import com.gabriel.sistema_agendamentos_consultas_medicas.exceptions.IdNaoEncontradoException;
+import com.gabriel.sistema_agendamentos_consultas_medicas.exceptions.MedicoNaoDisponivelException;
 import com.gabriel.sistema_agendamentos_consultas_medicas.model.DisponibilidadeMedico;
 import com.gabriel.sistema_agendamentos_consultas_medicas.model.Medico;
 import com.gabriel.sistema_agendamentos_consultas_medicas.model.dtos.DisponibilidadeMedicoRequestDTO;
@@ -22,7 +24,7 @@ public class DisponibilidadeMedicoService {
     public DisponibilidadeMedicoResponseDTO criarDisponibilidade(DisponibilidadeMedicoRequestDTO medicoRequest){
 
         Medico medico = medicoRepository.findById(medicoRequest.medicoId())
-                .orElseThrow(()-> new RuntimeException("Medico nao encontrado com o id: " + medicoRequest.medicoId()));
+                .orElseThrow(()-> new IdNaoEncontradoException("Medico nao encontrado com o id: " + medicoRequest.medicoId()));
 
 
         DisponibilidadeMedico disponibilidade = new DisponibilidadeMedico();
@@ -47,7 +49,7 @@ public class DisponibilidadeMedicoService {
     public void deletarDisponibilidade(Long id){
 
         DisponibilidadeMedico disponibilidade = disponibilidadeRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Disponibilidade medica nao encontrada com o id: " + id));
+                .orElseThrow(() -> new IdNaoEncontradoException("Disponibilidade medica nao encontrada com o id: " + id));
         disponibilidadeRepository.delete(disponibilidade);
     }
 
@@ -69,7 +71,7 @@ public class DisponibilidadeMedicoService {
     public DisponibilidadeMedicoResponseDTO listarDisponibilidadePorId(Long id){
 
         DisponibilidadeMedico disponibilidades = disponibilidadeRepository.findById(id)
-                .orElseThrow(()-> new RuntimeException("Disponibilidade nao encontrada com o id: " + id));
+                .orElseThrow(()-> new IdNaoEncontradoException("Disponibilidade nao encontrada com o id: " + id));
 
         return new DisponibilidadeMedicoResponseDTO(
                 disponibilidades.getId(),
@@ -84,12 +86,12 @@ public class DisponibilidadeMedicoService {
     public List<DisponibilidadeMedicoResponseDTO> listarDisponibilidadePorMedicoId(Long medicoId){
 
         Medico medico = medicoRepository.findById(medicoId)
-                .orElseThrow(()-> new RuntimeException("Medico nao encontrado com o id: " + medicoId));
+                .orElseThrow(()-> new IdNaoEncontradoException("Medico nao encontrado com o id: " + medicoId));
 
         List<DisponibilidadeMedico> disponibilidades = disponibilidadeRepository.findByMedicoId(medicoId);
 
         if(disponibilidades.isEmpty()){
-            throw new RuntimeException("Esse medico ainda nao possui disponibilidades cadastradas!");
+            throw new MedicoNaoDisponivelException("Esse medico ainda nao possui disponibilidades cadastradas!");
         }
 
         return disponibilidades.stream()
@@ -106,11 +108,11 @@ public class DisponibilidadeMedicoService {
     public DisponibilidadeMedicoResponseDTO atualizarDisponibilidadePorId(Long id, DisponibilidadeMedicoRequestDTO disponibilidadeMedicoRequestDTO){
 
         DisponibilidadeMedico disponibilidades = disponibilidadeRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Disponibilidade nao encontrada com o id: " + id));
+                .orElseThrow(() -> new IdNaoEncontradoException("Disponibilidade nao encontrada com o id: " + id));
 
 
         Medico medico = medicoRepository.findById(disponibilidadeMedicoRequestDTO.medicoId())
-                .orElseThrow(()-> new RuntimeException("Medico nao encontrado com o id: " + disponibilidadeMedicoRequestDTO.medicoId()));
+                .orElseThrow(()-> new IdNaoEncontradoException("Medico nao encontrado com o id: " + disponibilidadeMedicoRequestDTO.medicoId()));
 
         disponibilidades.setMedico(medico);
         disponibilidades.setDiaDaSemana(disponibilidadeMedicoRequestDTO.diaDaSemana());
