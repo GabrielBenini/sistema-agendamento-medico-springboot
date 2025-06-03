@@ -1,5 +1,6 @@
 package com.gabriel.sistema_agendamentos_consultas_medicas.model.dtos;
 
+import jakarta.validation.constraints.Future;
 import jakarta.validation.constraints.NotNull;
 
 import java.time.LocalDate;
@@ -12,6 +13,7 @@ public record ConsultaRequestDTO(
         @NotNull
         Long medicoId,
         @NotNull
+        @Future
         LocalDate data,
         @NotNull
         LocalTime hora,
