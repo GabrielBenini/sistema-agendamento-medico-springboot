@@ -12,8 +12,9 @@ import com.gabriel.sistema_agendamentos_consultas_medicas.repository.ConsultaRep
 import com.gabriel.sistema_agendamentos_consultas_medicas.repository.DisponibilidadeMedicoRespository;
 import com.gabriel.sistema_agendamentos_consultas_medicas.repository.MedicoRepository;
 import com.gabriel.sistema_agendamentos_consultas_medicas.repository.PacientesRepository;
-import jakarta.persistence.Id;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.time.DayOfWeek;
@@ -170,20 +171,19 @@ public class ConsultaService {
         );
     }
 
-    public List<ConsultaResponseDTO> listarConsultasGeral(){
+    public Page<ConsultaResponseDTO> listarConsultasPaginadas(Pageable pageable){
 
-        return consultaRepository.findAll()
-                .stream()
-                .map(consultas -> new ConsultaResponseDTO(
-                        consultas.getId(),
-                        consultas.getPaciente().getNome(),
-                        consultas.getMedico().getNome(),
-                        consultas.getMedico().getEspecialidade(),
-                        consultas.getData(),
-                        consultas.getHora(),
-                        consultas.getStatus(),
-                        consultas.getObservacoes()
-                )).toList();
+        return consultaRepository.findAll(pageable)
+                .map(consulta -> new ConsultaResponseDTO(
+                        consulta.getId(),
+                        consulta.getPaciente().getNome(),
+                        consulta.getMedico().getNome(),
+                        consulta.getMedico().getEspecialidade(),
+                        consulta.getData(),
+                        consulta.getHora(),
+                        consulta.getStatus(),
+                        consulta.getObservacoes()
+                ));
     }
 
     public List<ConsultaResponseDTO> listarConsultasPorPacienteId(Long pacienteId){

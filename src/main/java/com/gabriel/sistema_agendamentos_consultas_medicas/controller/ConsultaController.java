@@ -4,6 +4,8 @@ import com.gabriel.sistema_agendamentos_consultas_medicas.model.dtos.ConsultaReq
 import com.gabriel.sistema_agendamentos_consultas_medicas.model.dtos.ConsultaResponseDTO;
 import com.gabriel.sistema_agendamentos_consultas_medicas.service.ConsultaService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
@@ -47,10 +49,11 @@ public class ConsultaController {
     }
 
     @GetMapping
-    public ResponseEntity<List<ConsultaResponseDTO>> listarConsultasGeral(){
+    public ResponseEntity<Page<ConsultaResponseDTO>> listarConsultasPaginadas(Pageable pageable){
 
-        List<ConsultaResponseDTO> consultaResponseDTO = consultaService.listarConsultasGeral();
+        Page<ConsultaResponseDTO> consultaResponseDTO = consultaService.listarConsultasPaginadas(pageable);
         return ResponseEntity.status(HttpStatus.OK).body(consultaResponseDTO);
+
     }
 
     @GetMapping("/pacientes/{id}")
@@ -67,12 +70,6 @@ public class ConsultaController {
         List<ConsultaResponseDTO> consultaResponseDTO = consultaService.listarConsultasPorMedicoId(id);
         return ResponseEntity.status(HttpStatus.OK).body(consultaResponseDTO);
     }
-
-
-
-
-
-
 
 
 
